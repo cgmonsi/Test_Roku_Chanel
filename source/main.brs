@@ -1,6 +1,21 @@
-' ********** Copyright 2019 Roku Corp.  All Rights Reserved. **********
+sub Main()
+  showChannelSGScreen()
+end sub
 
-'This function should be implemented in order to start SGDEX channel
-function GetSceneName() as String
-    return "MainScene"
-end function
+sub showChannelSGScreen()
+  screen = CreateObject("roSGScreen")
+  m.port = CreateObject("roMessagePort")
+  screen.setMessagePort(m.port)
+  scene = screen.CreateScene("MainScene")
+  screen.show()
+
+  while(true)
+    msg = wait(0, m.port)
+    msgType = type(msg)
+
+    if msgType = "roSGScreenEvent"
+      if msg.isScreenClosed() then return
+    end if
+  end while
+
+end sub

@@ -1,8 +1,108 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version = "1.0" encoding = "utf-8" ?>
 
-<component name="MainScene" extends="BaseScene" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://devtools.web.roku.com/schema/RokuSceneGraph.xsd">
-    <script type="text/brightscript" uri="MainScene.brs" />
-    <script type="text/brightscript" uri="DetailsViewLogic.brs" />
-    <script type="text/brightscript" uri="VideoPlayerLogic.brs" />
-    <script type="text/brightscript" uri="../source/rsg_utils.brs" />
+<component name = "MainScene" extends = "Scene" initialFocus = "RowList">
+
+  <script type="text/brightscript" uri="MainScene.brs" />
+
+  <children >
+    <Poster 
+      id = "bgPoster"/>
+
+    <Video
+      id = "video"
+      visible = "false" />
+
+    <Poster 
+      id = "fgPoster"
+      uri = "pkg:/images/Mask.png"/>
+
+    <Label 
+        id = "loadingLabel" 
+        width = "400"
+        height = "100" 
+        horizAlign = "center"
+        vertAlign = "center"
+        font = "font:MediumBoldSystemFont" 
+        text = "Loading..."/>
+
+    <Rectangle 
+      id = "infoRectangle" 
+      color = "#10101F00">
+
+      <Label 
+        id = "titleLabel" 
+        translation = "[ 15, 15 ]" 
+        wrap = "true" 
+        font = "font:MediumBoldSystemFont" />
+
+      <Poster 
+        id = "hdrPoster" 
+        width = "40" 
+        height = "20" 
+        translation = "[ 15, 62 ]" 
+        uri = "pkg:/images/HDR.png" />
+      <Label 
+        id = "dateLabel" 
+        translation = "[ 70, 60 ]" 
+        width = "260" 
+        height = "30" 
+        wrap = "true" 
+        text = "dsfds"
+        font = "font:MediumBoldSystemFont" />
+      <Rectangle 
+        id = "divRectangle" 
+        translation = "[ 150, 60 ]" 
+        width = "2" 
+        height = "25" 
+        color = "#FFFFFFFF"/>
+      <Label
+        id = "durationLabel" 
+        translation = "[ 160, 60 ]" 
+        width = "200" 
+        height = "30" 
+        wrap = "true" 
+        text = "234"
+        font = "font:MediumBoldSystemFont" />
+
+      <Label 
+        id = "infoLabel" 
+        translation = "[ 15, 90 ]" 
+        wrap = "true" 
+        ellipsizeOnBoundary = "true"
+        font = "font:MediumBoldSystemFont"/>
+    </Rectangle>
+
+
+    <Poster 
+      id = "logoPoster" 
+      width = "120" 
+      height = "40" 
+      uri = "pkg:/images/Logo.png" />
+    <Poster 
+      id = "arrowPoster" 
+      width = "35" 
+      height = "20" 
+      uri = "pkg:/images/Arrow.png" />
+
+
+    <RowList 
+      id = "RowList" 
+      itemComponentName = "RowListItem" 
+      numRows = "2" 
+      itemSize = "[ 1408, 270 ]" 
+      rowItemSize = "[ [350, 200] ]" 
+      itemSpacing = "[ 0, 0 ]" 
+      rowItemSpacing = "[[ 20, 0 ]]" 
+      showRowLabel = "[ true ]" 
+      rowLabelOffset = "[[ 0, 20 ]]"
+      drawFocusFeedback = "true" 
+      vertFocusAnimationStyle = "fixedFocusWrap" 
+      rowFocusAnimationStyle = "fixedFocusWrap" />
+
+    <Timer 
+      id = "timerToPlayVideo" 
+      repeat = "false" 
+      duration = "1" />
+  </children>
+
 </component>

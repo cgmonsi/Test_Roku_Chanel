@@ -1,0 +1,8 @@
+{
+    "debug.openDebug": "neverOpen",
+    "files.exclude": {
+        "**/*.zip": true,
+        "**/.git": true,
+        "**/out": true
+    }
+}
