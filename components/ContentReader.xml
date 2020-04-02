@@ -7,6 +7,6 @@
     <field id = "content" type = "node" />
   </interface>
 
-  <script type="text/brightscript" uri="ContentReader.brs" />
+  <script type="text/brightscript" uri="Scripts/ContentReader/ContentReader.brs" />
 
 </component>

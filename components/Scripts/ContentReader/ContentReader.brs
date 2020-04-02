@@ -13,6 +13,7 @@ sub getcontent()
         db_category = {}
         for each video in category.VIDEOS
             db = {}
+            db["ID"] = video.ID
             db["NAME"] = video.NAME
             db["DURATION"] = video.DURATION
             db["DESCRIPTION"] = video.DESCRIPTION
@@ -51,6 +52,7 @@ sub ConvertToContentNode(Content as object) as object
             date = datetime.AsDateString("short-month-no-weekday") + " " + hours + ":" + minutes
 
             subItemContent = itemContent.createChild("ContentNode")
+            subItemContent.ID = subItems[key].ID
             subItemContent.title = subItems[key].NAME
             subItemContent.HDPosterUrl = subItems[key].PICTURE
             subItemContent.FHDPosterUrl = subItems[key].BIG_PICTURE
@@ -59,6 +61,11 @@ sub ConvertToContentNode(Content as object) as object
             subItemContent.ReleaseDate = date
             newItems = {}
             newItems["HDR"] = subItems[key].HDR
+            if subItems[key].HDR = 1
+                newItems["Free"] = false
+            else 
+                newItems["Free"] = true
+            end if
             newItems["DURATION"] = subItems[key].DURATION
             subItemContent.addFields(newItems)
         end for

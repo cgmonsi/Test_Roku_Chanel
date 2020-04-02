@@ -1,0 +1,54 @@
+<?xml version = "1.0" encoding = "utf-8" ?>
+
+<component name = "SubscribeListItem" extends = "Group" >
+ 
+  <interface> 
+    <field id = "itemContent" type = "node" onChange = "showcontent" />
+    <field id = "focusPercent" type = "float" onChange = "showfocus" />
+  </interface>
+ 
+  <script type="text/brightscript" uri="Scripts/SubscribeListItem/SubscribeListItem.brs" />
+
+  <children>
+
+    <Poster
+          id="itemcursor"
+          uri = "pkg:/images/Subscribe_boundaries.png"
+          width="358"
+          height="68"
+          opacity = "0"
+    />
+
+    <Poster
+          id="subscribePoster"
+          translation = "[ 4, 4 ]" 
+          uri = "pkg:/images/Subscribe.png"
+          width="350"
+          height="60">
+
+          <Label
+              id="itemPriceDisplay"
+              horizAlign="left"
+              translation="[220,20]"
+              font="font:MediumSystemFont"
+              width="196"
+              height="65"
+              text="99.99$"
+          />
+
+          <Animation 
+              id = "purchaseButtonAnimation" 
+              duration = "0.5" 
+              easeFunction = "inOutQuad" >
+
+              <Vector2DFieldInterpolator 
+                  key = "[ 0.0, 1.0 ]" 
+                  keyValue = "[ [0, 0], [500, 500] ]" 
+                  fieldToInterp = "purchaseRectangle.translation" />
+
+        </Animation>
+      </Poster>
+
+  </children>
+
+</component>

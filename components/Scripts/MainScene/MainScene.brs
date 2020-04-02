@@ -1,8 +1,56 @@
 sub init()
     m.padding = 20
 
+    FindAllNodes()
+
+    m.arrowPoster.visible = false
+    m.rowlist.visible = false
+    m.infoRectangle.visible = false
+    m.hdrPoster.visible = true
+
+    m.visibleUI = true
+    m.free_watch = true
+    m.visibleSubscribeButton = false
+
+    m.di = CreateObject("roDeviceInfo")
+    m.uiRes = m.di.GetUIResolution()
+
+    SetSubscribeList()
+    SetSizeUI()
+    LoadJSONFile()
+    m.rowlist.observeField("rowItemFocused", "ChannelChange")
+
+    m.top.setFocus(true)
+end sub
+
+
+sub SetSubscribeList()
+    contentNode = createObject("RoSGNode", "ContentNode")
+    itemContent1 = ContentNode.createChild("ContentNode")
+    itemContent1.title = "0.99$"
+    newItems = {}
+    newItems["price"] = 0.99
+    itemContent1.addFields(newItems)
+    itemContent2 = ContentNode.createChild("ContentNode")
+    itemContent2.title = "99.99$"
+    newItems = {}
+    newItems["price"] = 99.99
+    itemContent2.addFields(newItems)
+    m.subscribeMarkupList.content = contentNode
+end sub
+
+
+sub FindAllNodes()
+    m.purchaseRectangle = m.top.findNode("purchaseRectangle")
+    m.subscribePoster = m.top.findNode("subscribePoster")
+    m.itemPriceDisplay = m.top.findNode("itemPriceDisplay")
+    m.subscribeBoundariesPoster = m.top.findNode("subscribeBoundariesPoster")
+    m.purchaseButtonAnimation = m.top.findNode("purchaseButtonAnimation")
+    m.subscribeMarkupList = m.top.findNode("subscribeMarkupList")
+
     m.bgPoster = m.top.findNode("bgPoster")
     m.fgPoster = m.top.findNode("fgPoster")
+    m.fgRectangle = m.top.findNode("fgRectangle")
 
     m.video = m.top.findNode("video")
     m.rowlist = m.top.findNode("RowList")
@@ -17,20 +65,6 @@ sub init()
     m.divRectangle = m.top.findNode("divRectangle")
     m.arrowPoster = m.top.findNode("arrowPoster")
     m.timer = m.top.findNode("timerToPlayVideo")
-
-    m.arrowPoster.visible = false
-    m.rowlist.visible = false
-    m.infoRectangle.visible = false
-    m.hdrPoster.visible = true
-    m.visibleUI = true
-
-    m.di = CreateObject("roDeviceInfo")
-
-    SetSizeUI()
-    LoadJSONFile()
-    m.rowlist.observeField("rowItemFocused", "ChannelChange")
-
-    m.top.setFocus(true)
 end sub
 
 
@@ -69,6 +103,12 @@ end sub
 
 sub ChannelChange()
     item = m.rowlist.content.getChild(m.rowlist.rowItemFocused[0]).getChild(m.rowlist.rowItemFocused[1])
+    m.free_watch = item.Free
+
+    m.top.selectedContent = {
+        product_id : item.ID,
+        title : "'" + item.Title + "'",
+    }
 
     videocontent = createObject("RoSGNode", "ContentNode")
     videocontent.title = item.Title
@@ -88,55 +128,46 @@ sub ChannelChange()
     m.video.content = videocontent
     m.video.visible = false
     m.video.control = "stop"
-    m.timer.control = "start"
-    SetSizeDateLabel()
-end sub
-
-
-sub ShowVideo()
-    if m.video.state = "playing"
-        m.loadingLabel.visible = false
-        m.video.visible = true
+    if m.free_watch
+        m.timer.control = "start"
+    else
+        m.timer.control = "stop"
     end if
-end sub
-
-
-sub PlayVideo()
-    m.bgPoster.visible = true
-    m.video.control = "play"
-    m.video.ObserveField("state", "ShowVideo")
+    SetSizeDateLabel()
 end sub
 
 
 sub SetSizeUI()
     rowlist_boundingRect = m.rowlist.boundingRect()
-    uiRes = m.di.GetUIResolution()
 
     m.titleLabel.font.size = 30
     m.infoLabel.font.size = 16
 
     loadingBoundingRect = m.loadingLabel.boundingRect()
 
-    m.bgPoster.width = uiRes.width
-    m.bgPoster.height = uiRes.height
-    m.fgPoster.width = uiRes.width
-    m.fgPoster.height = uiRes.height
-    m.loadingLabel.width = uiRes.width
-    m.loadingLabel.height = uiRes.height
-    m.video.width = uiRes.width
-    m.video.height = uiRes.height
+    m.bgPoster.width = m.uiRes.width
+    m.bgPoster.height = m.uiRes.height
+    m.fgPoster.width = m.uiRes.width
+    m.fgPoster.height = m.uiRes.height
+    m.fgRectangle.width = m.uiRes.width
+    m.fgRectangle.height = m.uiRes.height
+    m.loadingLabel.width = m.uiRes.width
+    m.loadingLabel.height = m.uiRes.height
+    m.video.width = m.uiRes.width
+    m.video.height = m.uiRes.height
 
-    m.infoRectangle.width = uiRes.width / 1.5
-    m.infoRectangle.height = uiRes.height / 3
+    m.infoRectangle.width = m.uiRes.width / 1.5
+    m.infoRectangle.height = m.uiRes.height / 3
     m.titleLabel.width = m.infoRectangle.width - 30
     m.titleLabel.height = 40
     m.infoLabel.width = m.infoRectangle.width - 30
     m.infoLabel.height = 150
 
-    m.logoPoster.translation = [uiRes.width - m.logoPoster.width - m.padding, m.padding]
-    m.rowlist.translation = [m.padding, (uiRes.height - rowlist_boundingRect.height) + 300]
+    m.logoPoster.translation = [m.uiRes.width - m.logoPoster.width - m.padding, m.padding]
+    m.rowlist.translation = [m.padding, (m.uiRes.height - rowlist_boundingRect.height) + 300]
     m.infoRectangle.translation = [m.padding, m.rowlist.translation[1] - m.infoRectangle.height - 30]
-    m.arrowPoster.translation = [uiRes.width - m.arrowPoster.width - m.padding, uiRes.height - m.arrowPoster.height - m.padding]
+    m.arrowPoster.translation = [m.uiRes.width - m.arrowPoster.width - m.padding, m.uiRes.height - m.arrowPoster.height - m.padding]
+    m.purchaseRectangle.translation = [m.uiRes.width, m.infoRectangle.translation[1] + m.padding]
 
     SetSizeDateLabel ()
     m.top.setFocus(true)
@@ -153,31 +184,4 @@ sub SetSizeDateLabel()
     m.dateLabel.translation = [m.hdr_padding, 60]
     m.durationLabel.translation = [m.dateLabel.width + m.dateLabel.translation[0], 60]
     m.divRectangle.translation = [m.durationLabel.translation[0] - m.padding, 60]
-end sub
-
-
-sub onKeyEvent(key as string, press as boolean) as boolean
-    if key = "OK"
-        if m.visibleUI
-            if m.video.state <> "playing"
-                m.loadingLabel.visible = true
-            end if
-            m.top.setFocus(true)
-            m.video.visible = true
-            m.visibleUI = false
-            VisibleUI()
-            return true
-        else
-            if m.video.state <> "playing"
-                m.video.visible = false
-            end if
-            m.loadingLabel.visible = false
-            m.rowlist.setFocus(true)
-            m.visibleUI = true
-            VisibleUI()
-            ShowVideo()
-            return true
-        end if
-    end if
-    return false
 end sub

@@ -3,6 +3,7 @@
     "files.exclude": {
         "**/*.zip": true,
         "**/.git": true,
-        "**/out": true
+        "**/out": true,
+        "**/.gitignore": true
     }
 }
