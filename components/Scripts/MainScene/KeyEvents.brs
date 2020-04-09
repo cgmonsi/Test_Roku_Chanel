@@ -1,4 +1,21 @@
 sub onKeyEvent(key as string, press as boolean) as boolean
+    if press = true
+        if key = "left"
+            params = { key: key, seekInterval: 10 }
+            setTrickPlayThumbnail(params)
+            handled = true
+            return true
+        else if key = "right"
+            params = { key: key, seekInterval: 10 }
+            setTrickPlayThumbnail(params)
+            handled = true
+            return true
+        else if key = "OK"
+            m.playerUi.callFunc("showUIGroup")
+            handled = true
+        end if
+    end if
+
     if key = "back"
         if m.top.action <> ""
             return true
@@ -8,6 +25,7 @@ sub onKeyEvent(key as string, press as boolean) as boolean
         end if
         if m.visibleUI = false
             ifShowVideo(false)
+            m.playerUi.callFunc("hideUIGroup")
             return true
         end if
     end if
@@ -23,10 +41,34 @@ sub onKeyEvent(key as string, press as boolean) as boolean
                 end if
             end if
         else
-            ifShowVideo(press)
+            if m.visibleUI = true or press = true
+                ifShowVideo(true)
+            end if
         end if
     end if
     return false
+end sub
+
+
+sub setTrickPlayThumbnail(params as object)
+    key = params.key
+    seekInterval = params.seekInterval
+    if m.bitmovinPlayer.playerState <> "none" or m.bitmovinPlayer.playerState <> "stalling"
+        if key = "right"
+            seekTime = m.durationAndCurrentTime.currentVideoTime + seekInterval
+            if seekTime > m.durationAndCurrentTime.videoDuration
+                seekTime = m.durationAndCurrentTime.videoDuration
+            end if
+        else key = "left"
+            seekTime = m.durationAndCurrentTime.currentVideoTime - seekInterval
+            if seekTime < 0
+                seekTime = 0
+            end if
+        end if
+        m.durationAndCurrentTime.currentVideoTime = seekTime
+        m.playerUi.callFunc("setProgressBarWidth", m.durationAndCurrentTime)
+        m.bitmovinPlayer.callFunc(m.BitmovinFunctions.SEEK, m.durationAndCurrentTime.currentVideoTime)
+    end if
 end sub
 
 
@@ -65,23 +107,24 @@ sub HideSubscribeButton()
 end sub
 
 
-sub ifShowVideo(press as boolean)
-    if m.visibleUI
-        if m.video.state <> "playing"
-            m.loadingLabel.visible = true
+sub ifShowVideo(isShow as boolean)
+    if isShow = true
+        m.playerUi.setFocus(true)
+        if m.visibleUI = true
+            m.visibleUI = false
+            VisibleUI()
+        else
+            if m.bitmovinPlayer.playerState = "playing"
+                m.bitmovinplayer.callFunc(m.BitmovinFunctions.PAUSE, invalid)
+            else
+                m.bitmovinplayer.callFunc(m.BitmovinFunctions.PLAY, invalid)
+            end if
         end if
-        m.top.setFocus(true)
-        m.video.visible = true
-        m.visibleUI = false
-        VisibleUI()
-    else if press = false
-        if m.video.state <> "playing"
-            m.video.visible = false
-        end if
-        m.loadingLabel.visible = false
+        onPlayerState()
+    else
         m.rowlist.setFocus(true)
+        m.playerUi.callFunc("controlPlayerStateInfo", "")
         m.visibleUI = true
         VisibleUI()
-        ShowVideo()
     end if
 end sub

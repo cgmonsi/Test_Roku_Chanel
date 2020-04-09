@@ -9,15 +9,18 @@
     </interface>
 
   <script type="text/brightscript" uri="Scripts/MainScene/MainScene.brs" />
-  <script type="text/brightscript" uri="Scripts/MainScene/KeyEvents.brs" />
-  <script type="text/brightscript" uri="Scripts/MainScene/VideoController.brs" />
   <script type="text/brightscript" uri="Scripts/MainScene/ShowPurchaseStatus.brs" />
   <script type="text/brightscript" uri="Scripts/MainScene/MakePurchase.brs" />
-
+  <script type="text/brightscript" uri="Scripts/BitmovinPlayer/BitmovinPlayer.brs" />
+  <script type="text/brightscript" uri="Scripts/MainScene/KeyEvents.brs" />
 
   <children >
     <Poster 
         id = "bgPoster"
+    />
+
+    <Poster 
+        id = "bitmovinVideo"
     />
 
     <Video
@@ -156,12 +159,6 @@
         vertAlign = "center"
         font = "font:MediumBoldSystemFont" 
         text = "Loading..."
-    />
-
-    <Timer 
-        id = "timerToPlayVideo" 
-        repeat = "false" 
-        duration = "1" 
     />
   </children>
 

@@ -11,6 +11,7 @@ sub init()
     m.visibleUI = true
     m.free_watch = true
     m.visibleSubscribeButton = false
+    m.product_id = ""
 
     m.di = CreateObject("roDeviceInfo")
     m.uiRes = m.di.GetUIResolution()
@@ -21,6 +22,41 @@ sub init()
     m.rowlist.observeField("rowItemFocused", "ChannelChange")
 
     m.top.setFocus(true)
+end sub
+
+
+sub FindAllNodes()
+    m.bitmovinPlayerSDK = CreateObject("roSGNode", "ComponentLibrary")
+    m.bitmovinPlayerSDK.id = "BitmovinPlayerSDK"
+    m.bitmovinPlayerSDK.uri = "https://cdn.bitmovin.com/player/roku/1/bitmovinplayer.zip"
+    m.top.appendChild(m.bitmovinPlayerSDK)
+    m.bitmovinPlayerSDK.observeField("loadStatus", "onLoadStatusChanged")
+
+    m.purchaseRectangle = m.top.findNode("purchaseRectangle")
+    m.subscribePoster = m.top.findNode("subscribePoster")
+    m.itemPriceDisplay = m.top.findNode("itemPriceDisplay")
+    m.subscribeBoundariesPoster = m.top.findNode("subscribeBoundariesPoster")
+    m.purchaseButtonAnimation = m.top.findNode("purchaseButtonAnimation")
+    m.subscribeMarkupList = m.top.findNode("subscribeMarkupList")
+
+    m.bgPoster = m.top.findNode("bgPoster")
+    m.fgPoster = m.top.findNode("fgPoster")
+    m.fgRectangle = m.top.findNode("fgRectangle")
+
+    m.bitmovinVideo = m.top.findNode("bitmovinVideo")
+    m.video = m.top.findNode("video")
+    m.rowlist = m.top.findNode("RowList")
+    m.infoRectangle = m.top.findNode("infoRectangle")
+    m.titleLabel = m.top.findNode("titleLabel")
+    m.infoLabel = m.top.findNode("infoLabel")
+    m.logoPoster = m.top.findNode("logoPoster")
+    m.hdrPoster = m.top.findNode("hdrPoster")
+    m.dateLabel = m.top.findNode("dateLabel")
+    m.loadingLabel = m.top.findNode("loadingLabel")
+    m.durationLabel = m.top.findNode("durationLabel")
+    m.divRectangle = m.top.findNode("divRectangle")
+    m.arrowPoster = m.top.findNode("arrowPoster")
+    m.timer = m.top.findNode("timerToHideUIVideo")
 end sub
 
 
@@ -40,34 +76,6 @@ sub SetSubscribeList()
 end sub
 
 
-sub FindAllNodes()
-    m.purchaseRectangle = m.top.findNode("purchaseRectangle")
-    m.subscribePoster = m.top.findNode("subscribePoster")
-    m.itemPriceDisplay = m.top.findNode("itemPriceDisplay")
-    m.subscribeBoundariesPoster = m.top.findNode("subscribeBoundariesPoster")
-    m.purchaseButtonAnimation = m.top.findNode("purchaseButtonAnimation")
-    m.subscribeMarkupList = m.top.findNode("subscribeMarkupList")
-
-    m.bgPoster = m.top.findNode("bgPoster")
-    m.fgPoster = m.top.findNode("fgPoster")
-    m.fgRectangle = m.top.findNode("fgRectangle")
-
-    m.video = m.top.findNode("video")
-    m.rowlist = m.top.findNode("RowList")
-    m.infoRectangle = m.top.findNode("infoRectangle")
-    m.titleLabel = m.top.findNode("titleLabel")
-    m.infoLabel = m.top.findNode("infoLabel")
-    m.logoPoster = m.top.findNode("logoPoster")
-    m.hdrPoster = m.top.findNode("hdrPoster")
-    m.dateLabel = m.top.findNode("dateLabel")
-    m.loadingLabel = m.top.findNode("loadingLabel")
-    m.durationLabel = m.top.findNode("durationLabel")
-    m.divRectangle = m.top.findNode("divRectangle")
-    m.arrowPoster = m.top.findNode("arrowPoster")
-    m.timer = m.top.findNode("timerToPlayVideo")
-end sub
-
-
 sub LoadJSONFile() as void
     m.readPosterGridTask = createObject("roSGNode", "ContentReader")
     m.readPosterGridTask.contenturi = "http://gameoff.xyz/vimeo/API.php?mode=playlists&video_width=All&videos=download&new=1&picture_width=295&big_picture_width=960&language=EN&platform=roku"
@@ -78,7 +86,6 @@ end sub
 
 sub VisibleUI() as void
     m.fgPoster.visible = m.visibleUI
-    m.bgPoster.visible = m.visibleUI
     m.rowlist.visible = m.visibleUI
     m.arrowPoster.visible = m.visibleUI
     m.infoRectangle.visible = m.visibleUI
@@ -86,17 +93,12 @@ end sub
 
 
 sub ShowRowList()
-    m.bgPoster.visible = true
     m.video.visible = false
     m.rowlist.visible = true
     m.arrowPoster.visible = true
     m.infoRectangle.visible = true
     m.loadingLabel.visible = false
     m.rowlist.content = m.readPosterGridTask.content
-
-    m.timer.ObserveField("fire", "PlayVideo")
-    m.timer.control = "start"
-
     SetSizeUI()
 end sub
 
@@ -115,6 +117,25 @@ sub ChannelChange()
     videocontent.streamformat = "mp4"
     videocontent.url = item.url
 
+    data = {
+        playback: {
+            autoplay: true
+        },
+        adaptation:{
+            preload: true
+        },
+        source: {
+            progressive: item.url,
+            title: item.Title
+        }
+    }
+
+    if m.product_id <> item.ID
+        m.product_id = item.ID
+        m.bitmovinplayer.callFunc(m.BitmovinFunctions.SETUP, data)
+    end if
+
+
     if item.HDR = 1
         m.hdrPoster.visible = true
     else
@@ -128,11 +149,6 @@ sub ChannelChange()
     m.video.content = videocontent
     m.video.visible = false
     m.video.control = "stop"
-    if m.free_watch
-        m.timer.control = "start"
-    else
-        m.timer.control = "stop"
-    end if
     SetSizeDateLabel()
 end sub
 

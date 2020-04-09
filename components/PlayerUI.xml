@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PlayerUI" extends="Group">
+
+  <interface>
+    <function name="initialize" />
+    <function name="setProgressBarWidth" />
+    <function name="setTrickPlayThumbnail" />
+    <function name="setSetupVideo" />
+    <function name="controlPlayerStateInfo" />
+    <function name="showUIGroup" />
+    <function name="hideUIGroup" />
+  </interface>
+  
+  <script type="text/brightscript" uri="Scripts/PlayerUI/PlayerUI.brs" />
+  <script type="text/brightscript" uri="Scripts/PlayerUI/Util.brs" />
+
+
+  <children>
+    <Group id = "playerStateInfoGroup" visible = "false">
+      <Rectangle
+        id = "playerStateInfoBackground"
+        color = "0x000000"
+        opacity = "0.0"
+        />
+      <Label
+        id="playerStateLabel"
+        height="40"
+        width="400"
+        horizAlign = "center"
+        vertAlign = "center"
+        font="font:LargeBoldSystemFont"
+        color = "#ffffff"
+        text = "Title"
+       />
+    </Group>
+    <Group id = "uiGroup"  visible = "false">
+       <Poster
+        id = "buttonPlay"
+        uri = "pkg:/images/Play.png"
+        height="100"
+        width="100"
+        visible = "true"
+      />
+      <Group id = "playerGroup">
+        <Rectangle id = "playerBackground" color = "0x1c1c1c" height = "40" opacity = "0.8">
+          <Rectangle id = "progressBarBackground" height = "8" color = "0x666666" >
+            <Rectangle
+              id = "progressBar"
+              color = "0x1fabe2"
+              width = "0"
+              height = "8"
+              inheritParentOpacity = "false"
+            />
+          </Rectangle>
+        </Rectangle>
+      </Group>
+    </Group>
+
+    <Timer 
+      id = "timerToHideUIVideo" 
+      repeat = "false" 
+      duration = "1" 
+    />
+  </children>
+</component>

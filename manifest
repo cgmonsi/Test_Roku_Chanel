@@ -14,6 +14,8 @@ ui_resolutions=hd
 
 splash_color=#121212
 splash_min_time=0
-bs_libs_required=roku_ads_lib
 
 splash_rsg_optimization=1
+
+# License key
+bitmovin_player_license_key=bba24534-9b30-4638-91f0-2cf903937dc1
